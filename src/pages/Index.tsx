@@ -36,7 +36,7 @@ const Index = () => {
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
+          style={{ backgroundImage: `url(/lovable-uploads/08438568-4a09-4980-b838-c4187b12e1f8.png)` }}
         >
           <div className="absolute inset-0 bg-forest-green-dark/60"></div>
         </div>
@@ -60,7 +60,7 @@ const Index = () => {
                 Explore Available Lots
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 border-white text-white hover:bg-white hover:text-forest-green">
+            <Button size="lg" variant="outline" className="text-lg px-8 border-white text-forest-green bg-white hover:bg-white/90">
               <Phone className="w-5 h-5 mr-2" />
               Contact Us
             </Button>

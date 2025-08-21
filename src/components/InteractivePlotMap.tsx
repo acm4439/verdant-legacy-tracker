@@ -158,8 +158,8 @@ const InteractivePlotMap = () => {
             
             {/* Interactive Lot Overlays - Positioned over the map */}
             <div className="absolute inset-0">
-              {/* Phase 1 - Garden Section (Left side yellow area) */}
-              <div className="absolute top-[20%] left-[10%] grid grid-cols-2 gap-2">
+              {/* Phase 1 - Garden Section (Left side area) */}
+              <div className="absolute top-[35%] left-[15%] grid grid-cols-2 gap-1">
                 {sampleLots.filter(lot => lot.phase === "1" && lot.block === "A").map((lot, index) => (
                   <button
                     key={lot.id}
@@ -173,7 +173,7 @@ const InteractivePlotMap = () => {
               </div>
 
               {/* Phase 1 - Premium Section (Center area) */}
-              <div className="absolute top-[30%] left-[40%]">
+              <div className="absolute top-[45%] left-[45%]">
                 {sampleLots.filter(lot => lot.phase === "1" && lot.block === "B").map((lot) => (
                   <button
                     key={lot.id}
@@ -187,7 +187,7 @@ const InteractivePlotMap = () => {
               </div>
 
               {/* Phase 2 - Family Estate (Right side) */}
-              <div className="absolute top-[25%] right-[15%]">
+              <div className="absolute top-[30%] right-[20%]">
                 {sampleLots.filter(lot => lot.phase === "2").map((lot) => (
                   <button
                     key={lot.id}

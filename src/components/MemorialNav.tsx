@@ -8,7 +8,6 @@ const MemorialNav = () => {
   const navItems = [
     { icon: Home, label: "Home", path: "/", active: location.pathname === "/" },
     { icon: BarChart3, label: "Dashboard", path: "/dashboard", active: location.pathname === "/dashboard" },
-    { icon: MapPin, label: "Plot Map", path: "/dashboard", active: false },
     { icon: Users, label: "Lot Owners", path: "/dashboard", active: false },
     { icon: Settings, label: "Settings", path: "/dashboard", active: false },
   ];
@@ -29,7 +28,7 @@ const MemorialNav = () => {
           </div>
 
           {/* Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-2 ml-auto mr-8">
             {navItems.map((item) => (
               <Button
                 key={item.label}
@@ -47,10 +46,7 @@ const MemorialNav = () => {
           </div>
 
           {/* User Actions */}
-          <div className="flex items-center space-x-3">
-            <Button variant="outline" size="sm">
-              Export Data
-            </Button>
+          <div className="flex items-center">
             <div className="w-8 h-8 bg-gradient-memorial rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-accent-foreground">A</span>
             </div>
