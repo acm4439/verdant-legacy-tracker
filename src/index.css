@@ -2,41 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Forest Lawn Memorial Park Design System - Professional and Elegant */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    /* Core Brand Colors */
+    --forest-green: 120 40% 25%;
+    --forest-green-light: 120 35% 35%;
+    --forest-green-dark: 120 45% 15%;
+    
+    /* Elegant Accents */
+    --memorial-gold: 45 65% 55%;
+    --memorial-gold-light: 45 60% 65%;
+    --trust-blue: 210 45% 45%;
+    --serenity-cream: 45 25% 95%;
+    
+    /* Status Colors */
+    --status-available: 120 60% 45%;
+    --status-sold: 0 60% 50%;
+    --status-development: 35 80% 55%;
+    --status-reserved: 210 55% 50%;
+    
+    /* Base System */
+    --background: 0 0% 98%;
+    --foreground: 120 15% 15%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 120 15% 15%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    --popover-foreground: 120 15% 15%;
+    
+    --primary: var(--forest-green);
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: var(--serenity-cream);
+    --secondary-foreground: var(--forest-green);
+    
+    --muted: 120 10% 92%;
+    --muted-foreground: 120 8% 45%;
+    
+    --accent: var(--memorial-gold);
+    --accent-foreground: var(--forest-green-dark);
+    
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 120 15% 85%;
+    --input: 120 15% 88%;
+    --ring: var(--forest-green);
+    
+    /* Design System Enhancements */
+    --gradient-forest: linear-gradient(135deg, hsl(var(--forest-green)), hsl(var(--forest-green-light)));
+    --gradient-memorial: linear-gradient(135deg, hsl(var(--memorial-gold)), hsl(var(--memorial-gold-light)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--serenity-cream)));
+    
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--forest-green) / 0.2);
+    --shadow-memorial: 0 4px 20px -4px hsl(var(--memorial-gold) / 0.3);
+    
+    --transition-memorial: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 

@@ -52,6 +52,25 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Memorial Park Brand Colors
+				'forest-green': {
+					DEFAULT: 'hsl(var(--forest-green))',
+					light: 'hsl(var(--forest-green-light))',
+					dark: 'hsl(var(--forest-green-dark))'
+				},
+				'memorial-gold': {
+					DEFAULT: 'hsl(var(--memorial-gold))',
+					light: 'hsl(var(--memorial-gold-light))'
+				},
+				'trust-blue': 'hsl(var(--trust-blue))',
+				'serenity-cream': 'hsl(var(--serenity-cream))',
+				// Status Colors
+				status: {
+					available: 'hsl(var(--status-available))',
+					sold: 'hsl(var(--status-sold))',
+					development: 'hsl(var(--status-development))',
+					reserved: 'hsl(var(--status-reserved))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -62,6 +81,18 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			backgroundImage: {
+				'gradient-forest': 'var(--gradient-forest)',
+				'gradient-memorial': 'var(--gradient-memorial)',
+				'gradient-subtle': 'var(--gradient-subtle)'
+			},
+			boxShadow: {
+				'elegant': 'var(--shadow-elegant)',
+				'memorial': 'var(--shadow-memorial)'
+			},
+			transitionProperty: {
+				'memorial': 'var(--transition-memorial)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
