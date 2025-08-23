@@ -158,12 +158,12 @@ const InteractivePlotMap = () => {
             
             {/* Interactive Lot Numbers positioned over existing map boxes */}
             <div className="absolute inset-0" role="region" aria-label="Interactive lot selection map">
-              {/* Garden Section A - Left side lots */}
+              {/* Garden Section A - Left side lots positioned on visible boxes */}
               {sampleLots.filter(lot => lot.phase === "1" && lot.block === "A").map((lot, index) => {
                 const positions = [
-                  { top: "32%", left: "13%" }, // A-001
-                  { top: "32%", left: "18%" }, // A-002  
-                  { top: "37%", left: "13%" }, // A-003
+                  { top: "28%", left: "11%" }, // A-001 - top left box
+                  { top: "28%", left: "16%" }, // A-002 - top right box
+                  { top: "33%", left: "11%" }, // A-003 - bottom left box
                 ];
                 const position = positions[index] || positions[0];
                 
@@ -177,7 +177,7 @@ const InteractivePlotMap = () => {
                         handleLotClick(lot);
                       }
                     }}
-                    className="absolute w-8 h-6 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
+                    className="absolute w-10 h-6 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
                     style={{ top: position.top, left: position.left }}
                     aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
                     title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
@@ -188,13 +188,13 @@ const InteractivePlotMap = () => {
                       lot.status === 'development' ? 'bg-status-development text-white' :
                       'bg-status-reserved text-white'
                     } hover:opacity-90`}>
-                      {lot.lotNo.split('-')[1]}
+                      A{lot.lotNo.split('-')[1]}
                     </span>
                   </button>
                 );
               })}
 
-              {/* Premium Section B - Center area */}
+              {/* Premium Section B - Center area positioned on visible box */}
               {sampleLots.filter(lot => lot.phase === "1" && lot.block === "B").map((lot) => (
                 <button
                   key={lot.id}
@@ -205,8 +205,8 @@ const InteractivePlotMap = () => {
                       handleLotClick(lot);
                     }
                   }}
-                  className="absolute w-10 h-7 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
-                  style={{ top: "42%", left: "44%" }}
+                  className="absolute w-12 h-8 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
+                  style={{ top: "40%", left: "42%" }}
                   aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
                   title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
                 >
@@ -216,12 +216,12 @@ const InteractivePlotMap = () => {
                     lot.status === 'development' ? 'bg-status-development text-white' :
                     'bg-status-reserved text-white'
                   } hover:opacity-90`}>
-                    {lot.lotNo.split('-')[1]}
+                    B{lot.lotNo.split('-')[1]}
                   </span>
                 </button>
               ))}
 
-              {/* Family Estate C - Right side */}
+              {/* Family Estate C - Right side positioned on visible box */}
               {sampleLots.filter(lot => lot.phase === "2").map((lot) => (
                 <button
                   key={lot.id}
@@ -232,8 +232,8 @@ const InteractivePlotMap = () => {
                       handleLotClick(lot);
                     }
                   }}
-                  className="absolute w-12 h-8 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
-                  style={{ top: "28%", right: "18%" }}
+                  className="absolute w-14 h-10 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
+                  style={{ top: "26%", right: "16%" }}
                   aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
                   title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
                 >
@@ -243,7 +243,7 @@ const InteractivePlotMap = () => {
                     lot.status === 'development' ? 'bg-status-development text-white' :
                     'bg-status-reserved text-white'
                   } hover:opacity-90`}>
-                    {lot.lotNo.split('-')[1]}
+                    C{lot.lotNo.split('-')[1]}
                   </span>
                 </button>
               ))}
