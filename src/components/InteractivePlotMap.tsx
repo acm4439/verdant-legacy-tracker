@@ -148,63 +148,116 @@ const InteractivePlotMap = () => {
             </div>
           </div>
 
-          {/* Site Plan Image with Overlaid Interactive Elements */}
+          {/* Site Plan Image with Interactive Lot Numbers */}
           <div className="relative bg-gradient-subtle rounded-lg overflow-hidden">
             <img 
               src="/lovable-uploads/9108a20f-d140-47a2-9217-3efa3d62f717.png"
-              alt="Forest Lawn Memorial Park Site Plan"
-              className="w-full h-auto opacity-90"
+              alt="Forest Lawn Memorial Park Site Development Plan - Interactive map showing available lots"
+              className="w-full h-auto"
             />
             
-            {/* Interactive Lot Overlays - Positioned over the map */}
-            <div className="absolute inset-0">
-              {/* Phase 1 - Garden Section (Left side area) */}
-              <div className="absolute top-[35%] left-[15%] grid grid-cols-2 gap-1">
-                {sampleLots.filter(lot => lot.phase === "1" && lot.block === "A").map((lot, index) => (
+            {/* Interactive Lot Numbers positioned over existing map boxes */}
+            <div className="absolute inset-0" role="region" aria-label="Interactive lot selection map">
+              {/* Garden Section A - Left side lots */}
+              {sampleLots.filter(lot => lot.phase === "1" && lot.block === "A").map((lot, index) => {
+                const positions = [
+                  { top: "32%", left: "13%" }, // A-001
+                  { top: "32%", left: "18%" }, // A-002  
+                  { top: "37%", left: "13%" }, // A-003
+                ];
+                const position = positions[index] || positions[0];
+                
+                return (
                   <button
                     key={lot.id}
                     onClick={() => handleLotClick(lot)}
-                    className={`w-12 h-8 ${statusColors[lot.status]} rounded border-2 border-white shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-md flex items-center justify-center`}
-                    title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleLotClick(lot);
+                      }
+                    }}
+                    className="absolute w-8 h-6 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
+                    style={{ top: position.top, left: position.left }}
+                    aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
+                    title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
                   >
-                    <span className="text-xs font-bold text-white">{lot.lotNo.split('-')[1]}</span>
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded shadow-sm ${
+                      lot.status === 'sold' ? 'bg-status-sold text-white' :
+                      lot.status === 'available' ? 'bg-status-available text-white' :
+                      lot.status === 'development' ? 'bg-status-development text-white' :
+                      'bg-status-reserved text-white'
+                    } hover:opacity-90`}>
+                      {lot.lotNo.split('-')[1]}
+                    </span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
 
-              {/* Phase 1 - Premium Section (Center area) */}
-              <div className="absolute top-[45%] left-[45%]">
-                {sampleLots.filter(lot => lot.phase === "1" && lot.block === "B").map((lot) => (
-                  <button
-                    key={lot.id}
-                    onClick={() => handleLotClick(lot)}
-                    className={`w-16 h-10 ${statusColors[lot.status]} rounded border-2 border-white shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-md flex items-center justify-center`}
-                    title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}`}
-                  >
-                    <span className="text-xs font-bold text-white">{lot.lotNo.split('-')[1]}</span>
-                  </button>
-                ))}
-              </div>
+              {/* Premium Section B - Center area */}
+              {sampleLots.filter(lot => lot.phase === "1" && lot.block === "B").map((lot) => (
+                <button
+                  key={lot.id}
+                  onClick={() => handleLotClick(lot)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleLotClick(lot);
+                    }
+                  }}
+                  className="absolute w-10 h-7 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
+                  style={{ top: "42%", left: "44%" }}
+                  aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
+                  title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
+                >
+                  <span className={`text-xs font-bold px-2 py-1 rounded shadow-sm ${
+                    lot.status === 'sold' ? 'bg-status-sold text-white' :
+                    lot.status === 'available' ? 'bg-status-available text-white' :
+                    lot.status === 'development' ? 'bg-status-development text-white' :
+                    'bg-status-reserved text-white'
+                  } hover:opacity-90`}>
+                    {lot.lotNo.split('-')[1]}
+                  </span>
+                </button>
+              ))}
 
-              {/* Phase 2 - Family Estate (Right side) */}
-              <div className="absolute top-[30%] right-[20%]">
-                {sampleLots.filter(lot => lot.phase === "2").map((lot) => (
-                  <button
-                    key={lot.id}
-                    onClick={() => handleLotClick(lot)}
-                    className={`w-20 h-12 ${statusColors[lot.status]} rounded border-2 border-white shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-md flex items-center justify-center`}
-                    title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}`}
-                  >
-                    <span className="text-xs font-bold text-white">{lot.lotNo.split('-')[1]}</span>
-                  </button>
-                ))}
-              </div>
+              {/* Family Estate C - Right side */}
+              {sampleLots.filter(lot => lot.phase === "2").map((lot) => (
+                <button
+                  key={lot.id}
+                  onClick={() => handleLotClick(lot)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleLotClick(lot);
+                    }
+                  }}
+                  className="absolute w-12 h-8 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
+                  style={{ top: "28%", right: "18%" }}
+                  aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
+                  title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
+                >
+                  <span className={`text-sm font-bold px-2 py-1 rounded shadow-sm ${
+                    lot.status === 'sold' ? 'bg-status-sold text-white' :
+                    lot.status === 'available' ? 'bg-status-available text-white' :
+                    lot.status === 'development' ? 'bg-status-development text-white' :
+                    'bg-status-reserved text-white'
+                  } hover:opacity-90`}>
+                    {lot.lotNo.split('-')[1]}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground mt-4 text-center">
-            Interactive lot selection - Click any colored area to view lot details
-          </p>
+          <div className="mt-4 text-center space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Interactive lot selection - Click any numbered lot to view detailed information
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Use Tab key to navigate between lots, Enter or Space to select
+            </p>
+          </div>
         </CardContent>
       </Card>
 

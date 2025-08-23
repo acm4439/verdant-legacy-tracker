@@ -47,9 +47,13 @@ const MemorialNav = () => {
 
           {/* User Actions */}
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-gradient-memorial rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-accent-foreground">A</span>
-            </div>
+            <button 
+              className="w-8 h-8 bg-gradient-memorial rounded-full flex items-center justify-center hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2"
+              aria-label="User account menu"
+              title="Account settings"
+            >
+              <span className="text-sm font-medium text-accent-foreground" aria-hidden="true">A</span>
+            </button>
           </div>
         </div>
       </div>

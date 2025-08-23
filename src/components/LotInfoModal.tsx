@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,16 +56,16 @@ const LotInfoModal = ({ open, onOpenChange, lotInfo }: LotInfoModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" aria-describedby="lot-info-description">
         <DialogHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div>
               <DialogTitle className="text-2xl text-forest-green">
                 Lot {lotInfo.lotNo}
               </DialogTitle>
-              <p className="text-muted-foreground mt-1">
+              <DialogDescription id="lot-info-description" className="text-muted-foreground mt-1">
                 Phase {lotInfo.phase} • Block {lotInfo.block} • Area {lotInfo.area}
-              </p>
+              </DialogDescription>
             </div>
             <Badge className={`${config.color} ${config.textColor} text-xs font-medium px-3 py-1`}>
               {config.label}
