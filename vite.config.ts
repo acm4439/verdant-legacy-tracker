@@ -13,6 +13,18 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' &&
     componentTagger(),
+    // Custom plugin to handle GeoJSON files
+    {
+      name: 'geojson-loader',
+      transform(code, id) {
+        if (id.endsWith('.geojson')) {
+          return {
+            code: `export default ${code}`,
+            map: null
+          };
+        }
+      }
+    }
   ].filter(Boolean),
   resolve: {
     alias: {

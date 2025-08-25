@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
 import PublicDashboard from "./components/PublicDashboard";
+import MemorialNav from "./components/MemorialNav";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -52,20 +54,28 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                user.type === 'admin' ? (
-                  <Dashboard username={user.username} onLogout={handleLogout} />
-                ) : (
-                  <PublicDashboard username={user.username} onLogout={handleLogout} />
-                )
-              } 
+          <div className="min-h-screen bg-background">
+            <MemorialNav 
+              userType={user.type} 
+              username={user.username} 
+              onLogout={handleLogout} 
             />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  user.type === 'admin' ? (
+                    <Dashboard username={user.username} onLogout={handleLogout} />
+                  ) : (
+                    <PublicDashboard username={user.username} onLogout={handleLogout} />
+                  )
+                } 
+              />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

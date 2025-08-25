@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Clock, Leaf, Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/memorial-park-hero.jpg";
 
 const Index = () => {
   const features = [
@@ -31,7 +30,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="space-y-0">
+    <div className="space-y-0 overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div 

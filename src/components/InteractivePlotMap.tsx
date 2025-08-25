@@ -4,6 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import LotInfoModal from "./LotInfoModal";
 import LeafletMap from "./LeafletMap";
 
+interface InteractivePlotMapProps {
+  hideStats?: boolean;
+}
+
 // Sample lot data with GeoJSON polygons for map plotting
 const sampleLots = [
   {
@@ -78,7 +82,7 @@ const statusColors = {
   reserved: "bg-status-reserved hover:bg-status-reserved/80"
 };
 
-const InteractivePlotMap = () => {
+const InteractivePlotMap = ({ hideStats = false }: InteractivePlotMapProps) => {
   const [selectedLot, setSelectedLot] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -97,39 +101,41 @@ const InteractivePlotMap = () => {
 
   return (
     <div className="space-y-6">
-      {/* Statistics Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-forest-green">{statistics.total}</div>
-            <p className="text-xs text-muted-foreground">Total Lots</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-status-sold">{statistics.sold}</div>
-            <p className="text-xs text-muted-foreground">Sold</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-status-available">{statistics.available}</div>
-            <p className="text-xs text-muted-foreground">Available</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-status-development">{statistics.development}</div>
-            <p className="text-xs text-muted-foreground">Development</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-status-reserved">{statistics.reserved}</div>
-            <p className="text-xs text-muted-foreground">Reserved</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Statistics Overview (optional) */}
+      {!hideStats && (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-forest-green">{statistics.total}</div>
+              <p className="text-xs text-muted-foreground">Total Lots</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-status-sold">{statistics.sold}</div>
+              <p className="text-xs text-muted-foreground">Sold</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-status-available">{statistics.available}</div>
+              <p className="text-xs text-muted-foreground">Available</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-status-development">{statistics.development}</div>
+              <p className="text-xs text-muted-foreground">Development</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold text-status-reserved">{statistics.reserved}</div>
+              <p className="text-xs text-muted-foreground">Reserved</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Interactive Map */}
       <Card>

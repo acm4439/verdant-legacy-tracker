@@ -14,7 +14,6 @@ import {
   FileText
  } from "lucide-react";
 import InteractivePlotMap from "@/components/InteractivePlotMap";
-import MemorialNav from "@/components/MemorialNav";
 
 interface DashboardProps {
   username: string;
@@ -78,8 +77,6 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-serenity-cream to-memorial-gold/10">
-      <MemorialNav userType="admin" username={username} onLogout={onLogout} />
-      
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
       {/* Header */}
