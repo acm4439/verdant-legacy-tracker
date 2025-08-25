@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Polygon, Popup } from "react-leaflet";
+import { useState } from "react";
 import { LatLngExpression } from "leaflet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import LotInfoModal from "./LotInfoModal";
-import "leaflet/dist/leaflet.css";
+import LeafletMap from "./LeafletMap";
 
 // Sample lot data with GeoJSON polygons for map plotting
 const sampleLots = [
@@ -194,76 +193,7 @@ const InteractivePlotMap = () => {
 
           {/* Interactive Leaflet Map */}
           <div className="h-96 rounded-lg overflow-hidden border border-border">
-            <MapContainer
-              center={[14.7450, 121.1247]}
-              zoom={18}
-              style={{ height: '100%', width: '100%' }}
-              bounds={[[14.744429, 121.121024], [14.745598, 121.128346]]}
-              scrollWheelZoom={true}
-              attributionControl={true}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              
-              {/* Render polygons for each lot */}
-              {sampleLots.map((lot) => (
-                <Polygon
-                  key={lot.id}
-                  positions={lot.coordinates}
-                  pathOptions={{
-                    fillColor: getPolygonColor(lot.status),
-                    fillOpacity: 0.7,
-                    color: getPolygonColor(lot.status),
-                    weight: 2,
-                    opacity: 1
-                  }}
-                  eventHandlers={{
-                    click: () => handleLotClick(lot),
-                    mouseover: (e) => {
-                      e.target.setStyle({
-                        fillOpacity: 0.9,
-                        weight: 3
-                      });
-                    },
-                    mouseout: (e) => {
-                      e.target.setStyle({
-                        fillOpacity: 0.7,
-                        weight: 2
-                      });
-                    }
-                  }}
-                >
-                  <Popup>
-                    <div className="text-sm">
-                      <h3 className="font-semibold text-forest-green">{lot.lotNo}</h3>
-                      <p className="text-muted-foreground">{lot.area}</p>
-                      <Badge 
-                        variant="outline" 
-                        className={`mt-1 ${
-                          lot.status === 'sold' ? 'border-red-500 text-red-500' :
-                          lot.status === 'available' ? 'border-green-500 text-green-500' :
-                          lot.status === 'development' ? 'border-yellow-500 text-yellow-500' :
-                          'border-blue-500 text-blue-500'
-                        }`}
-                      >
-                        {lot.status.toUpperCase()}
-                      </Badge>
-                      {lot.name && (
-                        <p className="mt-1 text-xs"><strong>Owner:</strong> {lot.name}</p>
-                      )}
-                      <button 
-                        onClick={() => handleLotClick(lot)}
-                        className="mt-2 text-xs bg-forest-green text-white px-2 py-1 rounded hover:bg-forest-green/80"
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </Popup>
-                </Polygon>
-              ))}
-            </MapContainer>
+            <LeafletMap lots={sampleLots} onLotClick={handleLotClick} />
           </div>
 
           <div className="mt-4 text-center space-y-2">
