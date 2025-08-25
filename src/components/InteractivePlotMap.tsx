@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Polygon, Popup } from "react-leaflet";
+import { LatLngExpression } from "leaflet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import LotInfoModal from "./LotInfoModal";
+import "leaflet/dist/leaflet.css";
 
-// Sample lot data based on the Excel structure
+// Sample lot data with GeoJSON polygons for map plotting
 const sampleLots = [
   {
     id: "L001",
@@ -17,7 +20,13 @@ const sampleLots = [
     contractPrice: 850000,
     paidAmount: 425000,
     remainingBalance: 425000,
-    collector: "Maria Santos"
+    collector: "Maria Santos",
+    coordinates: [
+      [14.745200, 121.121500],
+      [14.745200, 121.121800],
+      [14.745000, 121.121800],
+      [14.745000, 121.121500]
+    ] as LatLngExpression[]
   },
   {
     id: "L002", 
@@ -25,7 +34,13 @@ const sampleLots = [
     block: "A",
     area: "Garden Section", 
     lotNo: "A-002",
-    status: 'available' as const
+    status: 'available' as const,
+    coordinates: [
+      [14.745200, 121.121800],
+      [14.745200, 121.122100],
+      [14.745000, 121.122100],
+      [14.745000, 121.121800]
+    ] as LatLngExpression[]
   },
   {
     id: "L003",
@@ -39,7 +54,13 @@ const sampleLots = [
     contractPrice: 720000,
     paidAmount: 720000,
     remainingBalance: 0,
-    collector: "Carlos Mendez"
+    collector: "Carlos Mendez",
+    coordinates: [
+      [14.745000, 121.121500],
+      [14.745000, 121.121800],
+      [14.744800, 121.121800],
+      [14.744800, 121.121500]
+    ] as LatLngExpression[]
   },
   {
     id: "L004",
@@ -47,7 +68,13 @@ const sampleLots = [
     block: "B", 
     area: "Premium Section",
     lotNo: "B-001",
-    status: 'development' as const
+    status: 'development' as const,
+    coordinates: [
+      [14.745100, 121.124500],
+      [14.745100, 121.125000],
+      [14.744900, 121.125000],
+      [14.744900, 121.124500]
+    ] as LatLngExpression[]
   },
   {
     id: "L005",
@@ -55,9 +82,26 @@ const sampleLots = [
     block: "C",
     area: "Family Estate",
     lotNo: "C-001", 
-    status: 'reserved' as const
+    status: 'reserved' as const,
+    coordinates: [
+      [14.745300, 121.127000],
+      [14.745300, 121.127500],
+      [14.745100, 121.127500],
+      [14.745100, 121.127000]
+    ] as LatLngExpression[]
   }
 ];
+
+// Map styling for different lot statuses
+const getPolygonColor = (status: string) => {
+  switch (status) {
+    case 'sold': return '#ef4444'; // red
+    case 'available': return '#22c55e'; // green
+    case 'development': return '#f59e0b'; // yellow
+    case 'reserved': return '#3b82f6'; // blue
+    default: return '#6b7280'; // gray
+  }
+};
 
 const statusColors = {
   sold: "bg-status-sold hover:bg-status-sold/80",
@@ -148,106 +192,78 @@ const InteractivePlotMap = () => {
             </div>
           </div>
 
-          {/* Site Plan Image with Interactive Lot Numbers */}
-          <div className="relative bg-gradient-subtle rounded-lg overflow-hidden">
-            <img 
-              src="/lovable-uploads/9108a20f-d140-47a2-9217-3efa3d62f717.png"
-              alt="Forest Lawn Memorial Park Site Development Plan - Interactive map showing available lots"
-              className="w-full h-auto"
-            />
-            
-            {/* Interactive Lot Numbers positioned over existing map boxes */}
-            <div className="absolute inset-0" role="region" aria-label="Interactive lot selection map">
-              {/* Garden Section A - Left side lots positioned on visible boxes */}
-              {sampleLots.filter(lot => lot.phase === "1" && lot.block === "A").map((lot, index) => {
-                const positions = [
-                  { top: "28%", left: "11%" }, // A-001 - top left box
-                  { top: "28%", left: "16%" }, // A-002 - top right box
-                  { top: "33%", left: "11%" }, // A-003 - bottom left box
-                ];
-                const position = positions[index] || positions[0];
-                
-                return (
-                  <button
-                    key={lot.id}
-                    onClick={() => handleLotClick(lot)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleLotClick(lot);
-                      }
-                    }}
-                    className="absolute w-10 h-6 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
-                    style={{ top: position.top, left: position.left }}
-                    aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
-                    title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
-                  >
-                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded shadow-sm ${
-                      lot.status === 'sold' ? 'bg-status-sold text-white' :
-                      lot.status === 'available' ? 'bg-status-available text-white' :
-                      lot.status === 'development' ? 'bg-status-development text-white' :
-                      'bg-status-reserved text-white'
-                    } hover:opacity-90`}>
-                      A{lot.lotNo.split('-')[1]}
-                    </span>
-                  </button>
-                );
-              })}
-
-              {/* Premium Section B - Center area positioned on visible box */}
-              {sampleLots.filter(lot => lot.phase === "1" && lot.block === "B").map((lot) => (
-                <button
+          {/* Interactive Leaflet Map */}
+          <div className="h-96 rounded-lg overflow-hidden border border-border">
+            <MapContainer
+              center={[14.7450, 121.1247]}
+              zoom={18}
+              style={{ height: '100%', width: '100%' }}
+              bounds={[[14.744429, 121.121024], [14.745598, 121.128346]]}
+              scrollWheelZoom={true}
+              attributionControl={true}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              
+              {/* Render polygons for each lot */}
+              {sampleLots.map((lot) => (
+                <Polygon
                   key={lot.id}
-                  onClick={() => handleLotClick(lot)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleLotClick(lot);
+                  positions={lot.coordinates}
+                  pathOptions={{
+                    fillColor: getPolygonColor(lot.status),
+                    fillOpacity: 0.7,
+                    color: getPolygonColor(lot.status),
+                    weight: 2,
+                    opacity: 1
+                  }}
+                  eventHandlers={{
+                    click: () => handleLotClick(lot),
+                    mouseover: (e) => {
+                      e.target.setStyle({
+                        fillOpacity: 0.9,
+                        weight: 3
+                      });
+                    },
+                    mouseout: (e) => {
+                      e.target.setStyle({
+                        fillOpacity: 0.7,
+                        weight: 2
+                      });
                     }
                   }}
-                  className="absolute w-12 h-8 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
-                  style={{ top: "40%", left: "42%" }}
-                  aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
-                  title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
                 >
-                  <span className={`text-xs font-bold px-2 py-1 rounded shadow-sm ${
-                    lot.status === 'sold' ? 'bg-status-sold text-white' :
-                    lot.status === 'available' ? 'bg-status-available text-white' :
-                    lot.status === 'development' ? 'bg-status-development text-white' :
-                    'bg-status-reserved text-white'
-                  } hover:opacity-90`}>
-                    B{lot.lotNo.split('-')[1]}
-                  </span>
-                </button>
+                  <Popup>
+                    <div className="text-sm">
+                      <h3 className="font-semibold text-forest-green">{lot.lotNo}</h3>
+                      <p className="text-muted-foreground">{lot.area}</p>
+                      <Badge 
+                        variant="outline" 
+                        className={`mt-1 ${
+                          lot.status === 'sold' ? 'border-red-500 text-red-500' :
+                          lot.status === 'available' ? 'border-green-500 text-green-500' :
+                          lot.status === 'development' ? 'border-yellow-500 text-yellow-500' :
+                          'border-blue-500 text-blue-500'
+                        }`}
+                      >
+                        {lot.status.toUpperCase()}
+                      </Badge>
+                      {lot.name && (
+                        <p className="mt-1 text-xs"><strong>Owner:</strong> {lot.name}</p>
+                      )}
+                      <button 
+                        onClick={() => handleLotClick(lot)}
+                        className="mt-2 text-xs bg-forest-green text-white px-2 py-1 rounded hover:bg-forest-green/80"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </Popup>
+                </Polygon>
               ))}
-
-              {/* Family Estate C - Right side positioned on visible box */}
-              {sampleLots.filter(lot => lot.phase === "2").map((lot) => (
-                <button
-                  key={lot.id}
-                  onClick={() => handleLotClick(lot)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleLotClick(lot);
-                    }
-                  }}
-                  className="absolute w-14 h-10 flex items-center justify-center transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none focus:ring-2 focus:ring-memorial-gold focus:ring-offset-2 rounded"
-                  style={{ top: "26%", right: "16%" }}
-                  aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
-                  title={`Lot ${lot.lotNo} - ${lot.status.toUpperCase()}${lot.name ? ` (${lot.name})` : ''}`}
-                >
-                  <span className={`text-sm font-bold px-2 py-1 rounded shadow-sm ${
-                    lot.status === 'sold' ? 'bg-status-sold text-white' :
-                    lot.status === 'available' ? 'bg-status-available text-white' :
-                    lot.status === 'development' ? 'bg-status-development text-white' :
-                    'bg-status-reserved text-white'
-                  } hover:opacity-90`}>
-                    C{lot.lotNo.split('-')[1]}
-                  </span>
-                </button>
-              ))}
-            </div>
+            </MapContainer>
           </div>
 
           <div className="mt-4 text-center space-y-2">
