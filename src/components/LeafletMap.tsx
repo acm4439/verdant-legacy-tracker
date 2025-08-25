@@ -50,11 +50,15 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
     script.onload = () => {
       if (!window.L || mapInstanceRef.current) return;
 
-      // Initialize map
+      // Initialize map with restricted bounds
       const map = new window.L.Map(mapRef.current!, {
         center: [14.7450, 121.1247],
         zoom: 18,
         scrollWheelZoom: true,
+        maxBounds: [[14.744429, 121.121024], [14.745598, 121.128346]], // Lock to memorial park area
+        maxBoundsViscosity: 1.0, // Prevent dragging outside bounds
+        minZoom: 17, // Prevent zooming out too much
+        maxZoom: 20, // Allow detailed zoom
       });
 
       // Add tile layer
@@ -140,15 +144,17 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
               border-radius: 4px;
               font-size: 12px;
               cursor: pointer;
-            ">View Details</button>
+            ">More Details</button>
           </div>
         `;
 
         polygon.bindPopup(popupContent);
 
-        // Add click handler
-        polygon.on('click', () => {
-          onLotClick(lot);
+        // Add click handler - only show popup, don't trigger modal
+        polygon.on('click', (e) => {
+          // Stop the event from bubbling to prevent modal opening
+          window.L.DomEvent.stopPropagation(e);
+          polygon.openPopup();
         });
 
         // Add hover effects
