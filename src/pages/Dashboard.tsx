@@ -12,10 +12,16 @@ import {
   CheckCircle,
   Clock,
   FileText
-} from "lucide-react";
+ } from "lucide-react";
 import InteractivePlotMap from "@/components/InteractivePlotMap";
+import MemorialNav from "@/components/MemorialNav";
 
-const Dashboard = () => {
+interface DashboardProps {
+  username: string;
+  onLogout: () => void;
+}
+
+const Dashboard = ({ username, onLogout }: DashboardProps) => {
   // Sample data
   const dashboardStats = {
     totalLots: 487,
@@ -71,7 +77,11 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-serenity-cream to-memorial-gold/10">
+      <MemorialNav userType="admin" username={username} onLogout={onLogout} />
+      
+      <main className="container mx-auto px-4 py-8">
+        <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
         <div>
@@ -219,6 +229,8 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+        </div>
+      </main>
     </div>
   );
 };

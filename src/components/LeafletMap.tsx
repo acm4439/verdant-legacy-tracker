@@ -48,10 +48,10 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
     const script = document.createElement('script');
     script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     script.onload = () => {
-      if (!window.L || mapInstanceRef.current) return;
+      if (!(window as any).L || mapInstanceRef.current) return;
 
       // Initialize map with restricted bounds
-      const map = new window.L.Map(mapRef.current!, {
+      const map = new (window as any).L.Map(mapRef.current!, {
         center: [14.7450, 121.1247],
         zoom: 18,
         scrollWheelZoom: true,
@@ -62,7 +62,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
       });
 
       // Add tile layer
-      new window.L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      new (window as any).L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
@@ -112,7 +112,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
         const coords = lotCoordinates[lot.id as keyof typeof lotCoordinates];
         if (!coords) return;
 
-        const polygon = new window.L.Polygon(coords as [number, number][], {
+        const polygon = new (window as any).L.Polygon(coords as [number, number][], {
           fillColor: getPolygonColor(lot.status),
           fillOpacity: 0.7,
           color: getPolygonColor(lot.status),
@@ -153,7 +153,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
         // Add click handler - only show popup, don't trigger modal
         polygon.on('click', (e) => {
           // Stop the event from bubbling to prevent modal opening
-          window.L.DomEvent.stopPropagation(e);
+          (window as any).L.DomEvent.stopPropagation(e);
           polygon.openPopup();
         });
 
