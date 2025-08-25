@@ -1,6 +1,7 @@
 import { MapPin, BarChart3, Users, Home, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
+import logo from "../../public/lovable-uploads/logoFLMP.png";
 
 interface MemorialNavProps {
   userType?: 'admin' | 'public';
@@ -24,9 +25,7 @@ const MemorialNav = ({ userType = 'admin', username, onLogout }: MemorialNavProp
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-white" />
-            </div>
+            <img src={logo} alt="Forest Lawn" className="w-10 h-10 rounded-lg object-cover" />
             <div>
               <h1 className="text-lg font-bold text-gray-900">Forest Lawn</h1>
               <p className="text-xs text-gray-500">Memorial Park</p>

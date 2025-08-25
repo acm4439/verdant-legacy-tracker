@@ -549,10 +549,10 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
       // Initialize map with restricted bounds
       const map = new (window as any).L.Map(mapRef.current!, {
         center: [14.7450, 121.1247],
-        zoom: 18,
+        zoom: 19,
         scrollWheelZoom: true,
-        maxBounds: [[14.744429, 121.121024], [14.745598, 121.128346]], // Lock to memorial park area
-        maxBoundsViscosity: 1.0, // Prevent dragging outside bounds
+        maxBounds: [[14.743000, 121.120000], [14.746500, 121.129000]], // Lock to memorial park area
+        maxBoundsViscosity: 0.2, // Prevent dragging outside bounds
         minZoom: 17, // Prevent zooming out too much
         maxZoom: 20, // Allow detailed zoom
       });
@@ -568,6 +568,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
         [14.744429, 121.121024],
         [14.745598, 121.128346]
       ]);
+      
 
       // Index of layers by plot name for external focus/search
       const nameToLayer: Record<string, any> = {};
@@ -595,7 +596,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
           const hasData = !!plotAreaData[feature.properties.name];
           const status = getStatusForFeature(feature.properties.name);
           const fillColor = ((): string => {
-            if (status.includes('FOR DEVELOPMENT')) return '#e5e7eb';
+            if (status.includes('FOR DEVELOPMENT')) return '#cc5e7d';
             if (status.includes('SOLD') && !status.includes('UNSOLD') && !status.includes('PARTIALLY')) return '#facc15'; // yellow
             if (status === 'UNSOLD') return '#ffffff';
             // partially/complex defaults to mostly white

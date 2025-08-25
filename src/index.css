@@ -18,10 +18,10 @@
     --serenity-cream: 45 25% 95%;
     
     /* Status Colors */
-    --status-available: 120 60% 45%;
-    --status-sold: 0 60% 50%;
-    --status-development: 35 80% 55%;
-    --status-reserved: 210 55% 50%;
+    --status-available: 0 0% 100%;        /* White */
+    --status-sold: 50 100% 50%;           /* Yellow */
+    --status-development: 0 80% 50%;      /* Red */
+    --status-reserved: 210 55% 50%;       /* Blue (unchanged) */
     
     /* Base System */
     --background: 0 0% 98%;
