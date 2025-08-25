@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { LatLngExpression } from "leaflet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import LotInfoModal from "./LotInfoModal";
-import LeafletMap from "./LeafletMap";
 
 // Sample lot data with GeoJSON polygons for map plotting
 const sampleLots = [
@@ -19,13 +17,7 @@ const sampleLots = [
     contractPrice: 850000,
     paidAmount: 425000,
     remainingBalance: 425000,
-    collector: "Maria Santos",
-    coordinates: [
-      [14.745200, 121.121500],
-      [14.745200, 121.121800],
-      [14.745000, 121.121800],
-      [14.745000, 121.121500]
-    ] as LatLngExpression[]
+    collector: "Maria Santos"
   },
   {
     id: "L002", 
@@ -33,13 +25,7 @@ const sampleLots = [
     block: "A",
     area: "Garden Section", 
     lotNo: "A-002",
-    status: 'available' as const,
-    coordinates: [
-      [14.745200, 121.121800],
-      [14.745200, 121.122100],
-      [14.745000, 121.122100],
-      [14.745000, 121.121800]
-    ] as LatLngExpression[]
+    status: 'available' as const
   },
   {
     id: "L003",
@@ -53,13 +39,7 @@ const sampleLots = [
     contractPrice: 720000,
     paidAmount: 720000,
     remainingBalance: 0,
-    collector: "Carlos Mendez",
-    coordinates: [
-      [14.745000, 121.121500],
-      [14.745000, 121.121800],
-      [14.744800, 121.121800],
-      [14.744800, 121.121500]
-    ] as LatLngExpression[]
+    collector: "Carlos Mendez"
   },
   {
     id: "L004",
@@ -67,13 +47,7 @@ const sampleLots = [
     block: "B", 
     area: "Premium Section",
     lotNo: "B-001",
-    status: 'development' as const,
-    coordinates: [
-      [14.745100, 121.124500],
-      [14.745100, 121.125000],
-      [14.744900, 121.125000],
-      [14.744900, 121.124500]
-    ] as LatLngExpression[]
+    status: 'development' as const
   },
   {
     id: "L005",
@@ -81,13 +55,7 @@ const sampleLots = [
     block: "C",
     area: "Family Estate",
     lotNo: "C-001", 
-    status: 'reserved' as const,
-    coordinates: [
-      [14.745300, 121.127000],
-      [14.745300, 121.127500],
-      [14.745100, 121.127500],
-      [14.745100, 121.127000]
-    ] as LatLngExpression[]
+    status: 'reserved' as const
   }
 ];
 
@@ -191,9 +159,76 @@ const InteractivePlotMap = () => {
             </div>
           </div>
 
-          {/* Interactive Leaflet Map */}
-          <div className="h-96 rounded-lg overflow-hidden border border-border">
-            <LeafletMap lots={sampleLots} onLotClick={handleLotClick} />
+          {/* Interactive Map with SVG */}
+          <div className="h-96 rounded-lg overflow-hidden border border-border bg-gradient-subtle relative">
+            <svg 
+              viewBox="0 0 800 400" 
+              className="w-full h-full"
+              role="img"
+              aria-label="Interactive memorial park lot map"
+            >
+              {/* Background grid */}
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e5e7eb" strokeWidth="1"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+              
+              {/* Render lot polygons */}
+              {sampleLots.map((lot, index) => {
+                // Create simple rectangles for lots positioned across the map
+                const positions = [
+                  { x: 50, y: 50, width: 80, height: 60 },   // A-001
+                  { x: 150, y: 50, width: 80, height: 60 },  // A-002  
+                  { x: 50, y: 130, width: 80, height: 60 },  // A-003
+                  { x: 300, y: 90, width: 100, height: 80 }, // B-001
+                  { x: 500, y: 60, width: 120, height: 100 } // C-001
+                ];
+                const pos = positions[index] || positions[0];
+                
+                return (
+                  <g key={lot.id}>
+                    <rect
+                      x={pos.x}
+                      y={pos.y}
+                      width={pos.width}
+                      height={pos.height}
+                      fill={getPolygonColor(lot.status)}
+                      fillOpacity="0.7"
+                      stroke={getPolygonColor(lot.status)}
+                      strokeWidth="2"
+                      className="cursor-pointer hover:fill-opacity-90 transition-all duration-200"
+                      onClick={() => handleLotClick(lot)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleLotClick(lot);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Lot ${lot.lotNo} in ${lot.area} - Status: ${lot.status}${lot.name ? `, Owner: ${lot.name}` : ''}`}
+                    />
+                    <text
+                      x={pos.x + pos.width/2}
+                      y={pos.y + pos.height/2}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      className="text-sm font-bold fill-white pointer-events-none"
+                      style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
+                    >
+                      {lot.lotNo}
+                    </text>
+                  </g>
+                );
+              })}
+              
+              {/* Labels for sections */}
+              <text x="90" y="30" textAnchor="middle" className="text-xs font-semibold fill-gray-600">Garden Section</text>
+              <text x="350" y="70" textAnchor="middle" className="text-xs font-semibold fill-gray-600">Premium Section</text>
+              <text x="560" y="40" textAnchor="middle" className="text-xs font-semibold fill-gray-600">Family Estate</text>
+            </svg>
           </div>
 
           <div className="mt-4 text-center space-y-2">
