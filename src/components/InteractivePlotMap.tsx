@@ -80,7 +80,7 @@ const sampleLots = [
 const getPolygonColor = (status: string) => {
   switch (status) {
     case 'sold': return '#f59e0b'; // yellow
-    case 'available': return '#6b7280'; // white
+    case 'available': return '#3b82f6'; // white
     case 'development': return '#ef4444'; // red
     case 'reserved': return '#3b82f6'; // blue
     default: return '#6b7280'; // gray

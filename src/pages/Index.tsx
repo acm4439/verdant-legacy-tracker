@@ -46,7 +46,7 @@ const Index = () => {
             <span className="block text-memorial-gold">Memorial Park</span>
           </h1>
           <p className="text-xl md:text-2xl mb-4 font-light">
-            "Art and Nature... Peace and Beauty Eternally"
+            "Ang binago at Higit na Pinagandang Memorial Park!"
           </p>
           <p className="text-lg mb-8 text-white/90 max-w-2xl mx-auto">
             Located in Rodriguez (formerly Montalban), Rizal. A serene resting place designed with 

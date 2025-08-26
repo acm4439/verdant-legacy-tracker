@@ -84,7 +84,7 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
         <div>
           <h1 className="text-3xl font-bold text-forest-green">Memorial Park Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            "Art and Nature... Peace and Beauty Eternally"
+            "Ang binago at Higit na Pinagandang Memorial Park!"
           </p>
         </div>
         <div className="flex space-x-3">
