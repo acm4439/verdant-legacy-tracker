@@ -6,6 +6,18 @@ import LeafletMap from "./LeafletMap";
 
 interface InteractivePlotMapProps {
   hideStats?: boolean;
+  publicMode?: boolean;
+  ownedLot?: {
+    areaName: string;
+    lotNo: string;
+    ownerName: string;
+    status: string;
+    contractPrice?: number;
+    paymentPlan?: string;
+    monthly?: string;
+    remainingBalance?: number;
+    lastPaymentDate?: string;
+  };
 }
 
 // Sample lot data with GeoJSON polygons for map plotting
@@ -82,7 +94,7 @@ const statusColors = {
   reserved: "bg-status-reserved hover:bg-status-reserved/80"
 };
 
-const InteractivePlotMap = ({ hideStats = false }: InteractivePlotMapProps) => {
+const InteractivePlotMap = ({ hideStats = false, publicMode = false, ownedLot }: InteractivePlotMapProps) => {
   const [selectedLot, setSelectedLot] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -142,7 +154,9 @@ const InteractivePlotMap = ({ hideStats = false }: InteractivePlotMapProps) => {
         <CardHeader>
           <CardTitle className="text-forest-green">Site Development Plan</CardTitle>
           <CardDescription>
-            Click on any lot to view detailed information. Colors indicate current status.
+            {publicMode
+              ? 'Click a plot area, then choose View Available Lots to see public availability.'
+              : 'Click on any lot to view detailed information. Colors indicate current status.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -167,10 +181,11 @@ const InteractivePlotMap = ({ hideStats = false }: InteractivePlotMapProps) => {
           </div>
 
           {/* Interactive Leaflet Map */}
-          <div className="h-96 rounded-lg overflow-hidden border border-border">
-            <LeafletMap lots={sampleLots} onLotClick={handleLotClick} />
+          <div id="public-map" className="h-96 rounded-lg overflow-hidden border border-border relative z-0">
+            <LeafletMap lots={sampleLots} onLotClick={handleLotClick} publicMode={publicMode} ownedLot={ownedLot} />
           </div>
 
+          {!publicMode && (
           <div className="mt-4 text-center space-y-2">
             <p className="text-sm text-muted-foreground">
               Interactive lot selection - Click any numbered lot to view detailed information
@@ -179,15 +194,18 @@ const InteractivePlotMap = ({ hideStats = false }: InteractivePlotMapProps) => {
               Use Tab key to navigate between lots, Enter or Space to select
             </p>
           </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Lot Information Modal */}
-      <LotInfoModal 
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        lotInfo={selectedLot}
-      />
+      {/* Lot Information Modal (hidden in public mode) */}
+      {!publicMode && (
+        <LotInfoModal 
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          lotInfo={selectedLot}
+        />
+      )}
     </div>
   );
 };

@@ -69,8 +69,12 @@ const Login = ({ onLogin }: LoginProps) => {
       <div className="w-full max-w-md">
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <MapPin className="w-8 h-8 text-white" />
+          <div className="w-20 h-20 mx-auto mb-4">
+            <img
+              src="/lovable-uploads/logoFLMP.png"
+              alt="Forest Lawn Memorial Park Logo"
+              className="w-20 h-20 object-contain rounded-2xl shadow-lg"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Forest Lawn</h1>
           <p className="text-lg text-gray-600">Memorial Park Management</p>

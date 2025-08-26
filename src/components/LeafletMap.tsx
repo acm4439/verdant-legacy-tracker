@@ -43,6 +43,18 @@ interface DetailedLot {
 interface LeafletMapProps {
   lots: DetailedLot[];
   onLotClick: (lot: DetailedLot) => void;
+  publicMode?: boolean;
+  ownedLot?: {
+    areaName: string;
+    lotNo: string;
+    ownerName: string;
+    status: string;
+    contractPrice?: number;
+    paymentPlan?: string;
+    monthly?: string;
+    remainingBalance?: number;
+    lastPaymentDate?: string;
+  };
 }
 
 // Map styling for different lot statuses
@@ -85,11 +97,44 @@ const getStatusBadgeColor = (status: string) => {
   }
 };
 
-const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
+const LeafletMap = ({ lots, onLotClick, publicMode = false, ownedLot }: LeafletMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const [selectedPlotArea, setSelectedPlotArea] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
+  const ownedMarkerRef = useRef<any>(null);
+  
+  // Public-facing availability data (demo)
+  const publicAvailabilityData: Record<string, {
+    summary: string;
+    slotsAvailable: number;
+    pricePerSlot: number;
+    currency: string;
+    paymentOptions: Array<{ label: string; details: string }>
+  }> = {
+    'Gumamela B': {
+      summary: 'Middle section available; outer rows sold.',
+      slotsAvailable: 12,
+      pricePerSlot: 85000,
+      currency: '₱',
+      paymentOptions: [
+        { label: 'Cash', details: '₱80,000 promotional cash price' },
+        { label: '20% downpayment', details: '₱17,000 DP + 24 mos at ₱3,400/mo' },
+        { label: '10% downpayment', details: '₱8,500 DP + 36 mos at ₱2,500/mo' }
+      ]
+    },
+    'Garden of Peace B': {
+      summary: 'Multiple lawn lots available across the block.',
+      slotsAvailable: 8,
+      pricePerSlot: 150000,
+      currency: '₱',
+      paymentOptions: [
+        { label: 'Cash', details: '₱145,000 discounted cash price' },
+        { label: '20% downpayment', details: '₱30,000 DP + 36 mos at ₱3,333/mo' },
+        { label: '30% downpayment', details: '₱45,000 DP + 24 mos at ₱4,375/mo' }
+      ]
+    }
+  };
 
   // Sample detailed lot data for each plot area - multiple people per area
   const plotAreaData: { [key: string]: DetailedLot[] } = {
@@ -591,7 +636,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
       };
 
       // Add GeoJSON layer for memorial park lots
-      (window as any).L.geoJSON(mapData, {
+      const geo = (window as any).L.geoJSON(mapData, {
         style: (feature: any) => {
           const hasData = !!plotAreaData[feature.properties.name];
           const status = getStatusForFeature(feature.properties.name);
@@ -615,22 +660,31 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
           nameToLayer[key] = layer;
           const status = getStatusForFeature(feature.properties.name);
           // Add popup content
-          const popupContent = `
-            <div style="font-family: system-ui; min-width: 200px;">
-              <h3 style="margin: 0 0 8px 0; color: #065f46; font-weight: 600;">${feature.properties.name}</h3>
-              <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px;">Status: ${status}</p>
-              <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 12px;">Click to view all lots in this area</p>
-              <button onclick="window.handlePlotAreaClick('${feature.properties.name}')" style="
+          const isPublic = publicMode;
+          const showsAvailability = status === 'UNSOLD' || status.toUpperCase().includes('PARTIALLY') || status.toUpperCase().includes('UNSOLD');
+          const buttonEnabled = isPublic ? showsAvailability : true;
+          const buttonLabel = isPublic ? (buttonEnabled ? 'View Available Lots' : 'No Available Lots') : 'View All Lots';
+          const buttonOnClick = buttonEnabled ? `onclick="window.handlePlotAreaClick('${feature.properties.name}')"` : '';
+          const buttonStyles = `
                 margin-top: 8px;
                 padding: 6px 12px;
-                background-color: #065f46;
+                background-color: ${buttonEnabled ? '#065f46' : '#9ca3af'};
                 color: white;
                 border: none;
                 border-radius: 4px;
                 font-size: 12px;
-                cursor: pointer;
+                cursor: ${buttonEnabled ? 'pointer' : 'not-allowed'};
                 width: 100%;
-              ">View All Lots</button>
+              `;
+          const subtitle = isPublic ? 'Public view' : 'Management view';
+          const note = isPublic ? (buttonEnabled ? 'Click to see available lots and pricing' : 'Area currently has no public availability') : 'Click to view all lots in this area';
+          const popupContent = `
+            <div style="font-family: system-ui; min-width: 220px;">
+              <h3 style="margin: 0 0 4px 0; color: #065f46; font-weight: 600;">${feature.properties.name}</h3>
+              <p style="margin: 0 0 4px 0; color: #16a34a; font-size: 12px;">${subtitle}</p>
+              <p style="margin: 0 8px 8px 0; color: #6b7280; font-size: 13px;">Status: ${status}</p>
+              <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 12px;">${note}</p>
+              <button ${buttonOnClick} style="${buttonStyles}">${buttonLabel}</button>
             </div>
           `;
 
@@ -686,23 +740,92 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
 
       mapInstanceRef.current = map;
 
+      // Owned lot marker setup (public mode)
+      const addOwnedMarkerIfAny = () => {
+        if (!publicMode || !ownedLot) return;
+        // Find the feature layer by name matching the area
+        const areaKey = String(ownedLot.areaName).toLowerCase();
+        let layer = nameToLayer[areaKey];
+        if (!layer) {
+          // fallback: try normalized comparison across keys
+          const targetNorm = normalizeName(ownedLot.areaName);
+          const matchKey = Object.keys(nameToLayer).find((k) => normalizeName(k) === targetNorm);
+          if (matchKey) layer = nameToLayer[matchKey];
+        }
+        if (!layer) return;
+        const bounds = layer.getBounds();
+        const center = bounds.getCenter();
+        if (ownedMarkerRef.current) {
+          map.removeLayer(ownedMarkerRef.current);
+          ownedMarkerRef.current = null;
+        }
+        const marker = new (window as any).L.marker(center, {
+          title: `${ownedLot.ownerName} – ${ownedLot.lotNo}`
+        }).addTo(map);
+        ownedMarkerRef.current = marker;
+        const content = `
+          <div style="font-family: system-ui; min-width: 220px;">
+            <div style="font-weight:700; color:#065f46;">Owned Lot</div>
+            <div style="margin-top:4px; font-size:14px;"><strong>Owner:</strong> ${ownedLot.ownerName}</div>
+            <div style="font-size:14px;"><strong>Area:</strong> ${ownedLot.areaName}</div>
+            <div style="font-size:14px;"><strong>Lot No:</strong> ${ownedLot.lotNo}</div>
+            <div style="font-size:14px;"><strong>Status:</strong> ${ownedLot.status}</div>
+            ${ownedLot.contractPrice ? `<div style="font-size:14px;"><strong>Contract Price:</strong> ₱${(ownedLot.contractPrice||0).toLocaleString()}</div>` : ''}
+            ${ownedLot.paymentPlan ? `<div style="font-size:14px;"><strong>Payment Plan:</strong> ${ownedLot.paymentPlan}</div>` : ''}
+            ${ownedLot.monthly ? `<div style="font-size:14px;"><strong>Monthly:</strong> ${ownedLot.monthly}</div>` : ''}
+            ${ownedLot.remainingBalance ? `<div style="font-size:14px;"><strong>Remaining:</strong> ₱${(ownedLot.remainingBalance||0).toLocaleString()}</div>` : ''}
+            ${ownedLot.lastPaymentDate ? `<div style="font-size:14px;"><strong>Last Payment:</strong> ${ownedLot.lastPaymentDate}</div>` : ''}
+          </div>`;
+        marker.bindPopup(content);
+        return { marker, center };
+      };
+
       // Global handler for plot area clicks
       (window as any).handlePlotAreaClick = (plotName: string) => {
         handlePlotAreaClick(plotName);
       };
 
-      // Expose a focus function for searching by plot name
+      // Expose a focus function for searching by plot name (robust matching + better centering)
       (window as any).focusPlotArea = (plotName: string) => {
         if (!plotName) return;
-        const layer = nameToLayer[String(plotName).toLowerCase()];
+        const inputName = String(plotName);
+        const lc = inputName.toLowerCase();
+        const aliasKey = nameAliases[lc] || lc;
+        let layer = nameToLayer[aliasKey];
+        if (!layer) {
+          const targetNorm = normalizeName(inputName);
+          const matchKey = Object.keys(nameToLayer).find((k) => normalizeName(k) === targetNorm);
+          if (matchKey) layer = nameToLayer[matchKey];
+        }
         if (layer) {
-          map.fitBounds(layer.getBounds(), { maxZoom: 19, padding: [20, 20] });
+          setTimeout(() => { try { map.invalidateSize(); } catch {} }, 0);
+          const bounds = layer.getBounds();
+          map.flyToBounds(bounds, {
+            maxZoom: 19,
+            paddingTopLeft: [80, 120],
+            paddingBottomRight: [80, 120],
+            animate: true
+          });
           const originalColor = (layer as any).options.color;
-          layer.setStyle({ color: '#f97316', weight: 4 }); // orange flash
+          layer.setStyle({ color: '#f97316', weight: 4 });
           layer.openPopup();
           setTimeout(() => {
-            layer.setStyle({ color: originalColor, weight: plotAreaData[plotName] ? 3 : 2 });
+            layer.setStyle({ color: originalColor, weight: plotAreaData[inputName] ? 3 : 2 });
           }, 1500);
+        }
+      };
+
+      // Add marker after layers are ready
+      const owned = addOwnedMarkerIfAny();
+
+      // Expose function to focus owned lot
+      (window as any).focusOwnedLot = () => {
+        if (!owned && (!ownedMarkerRef.current)) return;
+        const center = owned?.center || ownedMarkerRef.current.getLatLng?.();
+        if (!center) return;
+        map.setView(center, Math.max(map.getZoom(), 19), { animate: true });
+        if (ownedMarkerRef.current) {
+          ownedMarkerRef.current.openPopup();
         }
       };
 
@@ -727,8 +850,13 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
       // Clean up global handler
       delete (window as any).handlePlotAreaClick;
       delete (window as any).focusPlotArea;
+      delete (window as any).focusOwnedLot;
+      if (ownedMarkerRef.current) {
+        try { mapInstanceRef.current?.removeLayer?.(ownedMarkerRef.current); } catch {}
+        ownedMarkerRef.current = null;
+      }
     };
-  }, [lots, onLotClick]);
+  }, [lots, onLotClick, publicMode, ownedLot]);
 
   const selectedLots = plotAreaData[selectedPlotArea] || [];
 
@@ -736,7 +864,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
     <>
       <div 
         ref={mapRef} 
-        className="w-full h-full rounded-lg"
+        className="w-full h-full rounded-lg relative z-0"
         style={{ minHeight: '384px' }}
       />
       
@@ -749,7 +877,7 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-bold">{selectedPlotArea} Plot Area</h2>
-                  <p className="text-green-100 mt-1">Memorial Park Management System</p>
+                  <p className="text-green-100 mt-1">{publicMode ? 'Public availability view' : 'Memorial Park Management System'}</p>
                 </div>
                 <button
                   onClick={() => setShowModal(false)}
@@ -762,105 +890,170 @@ const LeafletMap = ({ lots, onLotClick }: LeafletMapProps) => {
 
             {/* Content */}
             <div className="p-6">
-              {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <div className="text-blue-600 font-semibold">Total Lots</div>
-                  <div className="text-2xl font-bold text-blue-800">{selectedLots.length}</div>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <div className="text-green-600 font-semibold">Fully Paid</div>
-                  <div className="text-2xl font-bold text-green-800">
-                    {selectedLots.filter(lot => lot.status.toLowerCase().includes('fully paid')).length}
-                  </div>
-                </div>
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <div className="text-yellow-600 font-semibold">Active Payments</div>
-                  <div className="text-2xl font-bold text-yellow-800">
-                    {selectedLots.filter(lot => lot.status.toLowerCase().includes('dp sales') || lot.status.toLowerCase().includes('20% dp')).length}
-                  </div>
-                </div>
-                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                  <div className="text-red-600 font-semibold">Missing Payments</div>
-                  <div className="text-2xl font-bold text-red-800">
-                    {selectedLots.filter(lot => lot.status.toLowerCase().includes('missing payment')).length}
-                  </div>
-                </div>
-              </div>
+              {publicMode ? (
+                (() => {
+                  const areaKey = Object.keys(publicAvailabilityData).find(k => k.toLowerCase() === String(selectedPlotArea).toLowerCase());
+                  const data = areaKey ? publicAvailabilityData[areaKey] : undefined;
+                  const status = getStatusForFeature(selectedPlotArea);
+                  const showAvail = status === 'UNSOLD' || status.toUpperCase().includes('PARTIALLY') || status.toUpperCase().includes('UNSOLD');
+                  if (!showAvail) {
+                    return (
+                      <div className="text-sm text-gray-700">
+                        There are currently no publicly available lots in this area.
+                      </div>
+                    );
+                  }
+                  if (!data) {
+                    return (
+                      <div className="text-sm text-gray-700">
+                        Availability information will be posted here when lots are released.
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                          <div className="text-green-700 font-semibold">Slots Available</div>
+                          <div className="text-2xl font-bold text-green-800">{data.slotsAvailable}</div>
+                        </div>
+                        <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                          <div className="text-emerald-700 font-semibold">Price per Slot</div>
+                          <div className="text-2xl font-bold text-emerald-800">{data.currency}{data.pricePerSlot.toLocaleString()}</div>
+                        </div>
+                        <div className="bg-teal-50 p-4 rounded-lg border border-teal-200">
+                          <div className="text-teal-700 font-semibold">Summary</div>
+                          <div className="text-sm text-teal-900">{data.summary}</div>
+                        </div>
+                      </div>
 
-              {/* Lots Table */}
-              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot Info</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contract Price</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Amount</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collector</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {selectedLots.map((lot, index) => (
-                        <tr key={lot.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{lot.lotNo}</div>
-                              <div className="text-sm text-gray-500">{lot.phase} - {lot.block}</div>
-                              <div className="text-xs text-gray-400">PID: {lot.pid}</div>
+                      <div className="bg-white border border-gray-200 rounded-lg">
+                        <div className="p-4 border-b text-sm font-semibold text-gray-700">Payment Options</div>
+                        <div className="divide-y">
+                          {data.paymentOptions.map((opt, i) => (
+                            <div key={i} className="p-4 flex items-start justify-between gap-4">
+                              <div>
+                                <div className="font-medium text-gray-900">{opt.label}</div>
+                                <div className="text-sm text-gray-600">{opt.details}</div>
+                              </div>
                             </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{lot.name}</div>
-                              <div className="text-sm text-gray-500">{lot.purchaseDate}</div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusBadgeColor(lot.status)}`}>
-                              {lot.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₱{lot.contractPrice.toLocaleString()}
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₱{lot.paidAmount.toLocaleString()}
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₱{lot.remainingBalance.toLocaleString()}
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {lot.collector}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                          ))}
+                        </div>
+                        <div className="p-4 text-xs text-gray-500">Prices and terms are illustrative and subject to change without prior notice.</div>
+                      </div>
 
-              {/* Action Buttons */}
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Close
-                </button>
-                <button
-                  onClick={() => {
-                    // Add export functionality here
-                    console.log('Export data for', selectedPlotArea);
-                  }}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Export Data
-                </button>
-              </div>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => setShowModal(false)}
+                          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <>
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <div className="text-blue-600 font-semibold">Total Lots</div>
+                      <div className="text-2xl font-bold text-blue-800">{selectedLots.length}</div>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                      <div className="text-green-600 font-semibold">Fully Paid</div>
+                      <div className="text-2xl font-bold text-green-800">
+                        {selectedLots.filter(lot => lot.status.toLowerCase().includes('fully paid')).length}
+                      </div>
+                    </div>
+                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                      <div className="text-yellow-600 font-semibold">Active Payments</div>
+                      <div className="text-2xl font-bold text-yellow-800">
+                        {selectedLots.filter(lot => lot.status.toLowerCase().includes('dp sales') || lot.status.toLowerCase().includes('20% dp')).length}
+                      </div>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                      <div className="text-red-600 font-semibold">Missing Payments</div>
+                      <div className="text-2xl font-bold text-red-800">
+                        {selectedLots.filter(lot => lot.status.toLowerCase().includes('missing payment')).length}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Lots Table */}
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50 border-b border-gray-200">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot Info</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contract Price</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Amount</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collector</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {selectedLots.map((lot) => (
+                            <tr key={lot.id} className="hover:bg-gray-50">
+                              <td className="px-4 py-4 whitespace-nowrap">
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{lot.lotNo}</div>
+                                  <div className="text-sm text-gray-500">{lot.phase} - {lot.block}</div>
+                                  <div className="text-xs text-gray-400">PID: {lot.pid}</div>
+                                </div>
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap">
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{lot.name}</div>
+                                  <div className="text-sm text-gray-500">{lot.purchaseDate}</div>
+                                </div>
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusBadgeColor(lot.status)}`}>
+                                  {lot.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                ₱{lot.contractPrice.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                ₱{lot.paidAmount.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                                ₱{lot.remainingBalance.toLocaleString()}
+                              </td>
+                              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {lot.collector}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      Close
+                    </button>
+                    <button
+                      onClick={() => {
+                        console.log('Export data for', selectedPlotArea);
+                      }}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Export Data
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

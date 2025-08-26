@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent Leaflet map panes from overlapping other content when scrolled */
+.leaflet-container,
+.leaflet-container .leaflet-pane,
+.leaflet-container .leaflet-top,
+.leaflet-container .leaflet-bottom {
+	z-index: 0 !important;
+}
+
+/* Ensure map is clipped to its container */
+.leaflet-container {
+	overflow: hidden;
+}
+
 /* Forest Lawn Memorial Park Design System - Professional and Elegant */
 
 @layer base {

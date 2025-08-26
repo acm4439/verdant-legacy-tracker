@@ -12,18 +12,20 @@ interface PublicDashboardProps {
   onLogout: () => void;
 }
 
-// Sample lot data for the public view
-const sampleLots = [
-  { id: "L001", lotNo: "A-001", area: "Garden Section", phase: "Phase 1", block: "A", status: "Sold", price: 850000, size: "4 sqm", location: "Near Main Entrance" },
-  { id: "L002", lotNo: "A-002", area: "Garden Section", phase: "Phase 1", block: "A", status: "Available", price: 720000, size: "4 sqm", location: "Near Prayer Area" },
-  { id: "L003", lotNo: "A-003", area: "Garden Section", phase: "Phase 1", block: "A", status: "Sold", price: 780000, size: "4 sqm", location: "Center Area" },
-  { id: "L004", lotNo: "B-001", area: "Premium Section", phase: "Phase 1", block: "B", status: "Available", price: 1200000, size: "6 sqm", location: "Premium Area" },
-  { id: "L005", lotNo: "B-002", area: "Premium Section", phase: "Phase 1", block: "B", status: "Reserved", price: 1150000, size: "6 sqm", location: "Premium Area" },
-  { id: "L006", lotNo: "C-001", area: "Family Estate", phase: "Phase 2", block: "C", status: "Available", price: 1500000, size: "8 sqm", location: "Family Section" },
-  { id: "L007", lotNo: "C-002", area: "Family Estate", phase: "Phase 2", block: "C", status: "Available", price: 1450000, size: "8 sqm", location: "Family Section" },
-  { id: "L008", lotNo: "D-001", area: "Chaplet Area", phase: "Phase 2", block: "D", status: "Development", price: 950000, size: "5 sqm", location: "Chaplet Section" },
-  { id: "L009", lotNo: "D-002", area: "Chaplet Area", phase: "Phase 2", block: "D", status: "Available", price: 920000, size: "5 sqm", location: "Chaplet Section" },
-  { id: "L010", lotNo: "E-001", area: "Garden of Peace", phase: "Phase 3", block: "E", status: "Available", price: 1800000, size: "10 sqm", location: "Peace Garden" }
+// Available lot areas by GeoJSON names, restricted to UNSOLD or PARTIALLY SOLD
+const availableLotsData = [
+  { id: "AV001", plotName: "Camella", areaType: "Regular", phase: "Phase 1", block: "A", status: "Partially Sold", price: 110000, size: "Lawn Lot", area: "Central Walk" },
+  { id: "AV002", plotName: "Gumamela B", areaType: "Prime", phase: "Phase 2", block: "C", status: "Partially Sold", price: 120000, size: "Garden Lot", area: "East Lane" },
+  { id: "AV003", plotName: "Azucena A", areaType: "Level A", phase: "Phase 2", block: "G", status: "Partially Sold", price: 110000, size: "Lawn Lot", area: "Azucena Lane" },
+  { id: "AV004", plotName: "Azucena B", areaType: "Level B", phase: "Phase 2", block: "G", status: "Partially Sold", price: 110000, size: "Lawn Lot", area: "Azucena Lane" },
+  { id: "AV005", plotName: "Camia A", areaType: "Regular", phase: "Phase 1", block: "B", status: "Partially Sold", price: 90000, size: "Lawn Lot", area: "Central Walk" },
+  { id: "AV006", plotName: "Camia B", areaType: "Regular", phase: "Phase 1", block: "B", status: "Partially Sold", price: 90000, size: "Lawn Lot", area: "Central Walk" },
+  { id: "AV007", plotName: "Garden of Love", areaType: "Premium", phase: "Phase 2", block: "D", status: "Partially Sold", price: 135000, size: "Garden Lot", area: "Love Lane" },
+  { id: "AV008", plotName: "Garden of Peace A", areaType: "Prime", phase: "Phase 3", block: "E", status: "Unsold", price: 150000, size: "Garden Lot", area: "Peace Garden" },
+  { id: "AV009", plotName: "Garden of Peace B", areaType: "Prime", phase: "Phase 3", block: "E", status: "Unsold", price: 150000, size: "Garden Lot", area: "Peace Garden" },
+  { id: "AV010", plotName: "Garden of Beauty A", areaType: "Premium", phase: "Phase 3", block: "F", status: "Unsold", price: 180000, size: "Garden Lot", area: "Beauty Walk" },
+  { id: "AV011", plotName: "Garden of Beauty B", areaType: "Premium", phase: "Phase 3", block: "F", status: "Unsold", price: 180000, size: "Garden Lot", area: "Beauty Walk" },
+  { id: "AV012", plotName: "Garden of Paradise B", areaType: "Premium", phase: "Phase 2", block: "D", status: "Partially Sold", price: 160000, size: "Garden Lot", area: "Paradise Row" }
 ];
 
 const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
@@ -34,14 +36,14 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
   const [page, setPage] = useState(1);
   const pageSize = 5;
 
-  // Filter and search logic (same as before)
+  // Filter and search for available lots (UNSOLD or PARTIALLY SOLD) by GeoJSON plot name
   const filteredLots = useMemo(() => {
-    const result = sampleLots.filter(lot => {
-      const matchesSearch = lot.lotNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           lot.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           lot.location.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === "all" || lot.status.toLowerCase() === statusFilter;
-      const matchesArea = areaFilter === "all" || lot.area === areaFilter;
+    const result = availableLotsData.filter(lot => {
+      const haystack = `${lot.plotName} ${lot.area} ${lot.areaType}`.toLowerCase();
+      const matchesSearch = haystack.includes(searchTerm.toLowerCase());
+      const s = lot.status.toLowerCase();
+      const matchesStatus = statusFilter === "all" || (statusFilter === 'available' && (s === 'unsold' || s.includes('partially')));
+      const matchesArea = areaFilter === "all" || lot.areaType === areaFilter;
       let matchesPrice = true;
       if (priceFilter !== "all") {
         const price = lot.price;
@@ -62,7 +64,8 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
 
   const getStatusBadgeColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'available': return 'bg-green-100 text-green-800 border-green-200';
+      case 'unsold': return 'bg-green-100 text-green-800 border-green-200';
+      case 'partially sold': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'sold': return 'bg-red-100 text-red-800 border-red-200';
       case 'reserved': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'development': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -70,7 +73,20 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
     }
   };
 
-  const availableAreas = Array.from(new Set(sampleLots.map(lot => lot.area)));
+  const availableAreas = Array.from(new Set(availableLotsData.map(lot => lot.areaType)));
+
+  // Demo: public user owns a lot in Belladona
+  const ownedLot = {
+    areaName: 'Belladona',
+    lotNo: 'Belladona-002',
+    ownerName: 'Jane Doe',
+    status: 'Fully Paid',
+    contractPrice: 310000,
+    paymentPlan: 'Cash (Paid in Full)',
+    monthly: 'N/A',
+    remainingBalance: 0,
+    lastPaymentDate: '2024-10-20'
+  } as const;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-serenity-cream to-memorial-gold/10">
@@ -80,10 +96,10 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
           <p className="text-muted-foreground">Explore available memorial lots and find your peaceful resting place</p>
         </div>
 
-        {/* Interactive Map with legend/heading controlled internally */}
-        <InteractivePlotMap hideStats />
+        {/* Interactive Map in public mode with owned lot marker */}
+        <InteractivePlotMap hideStats publicMode ownedLot={ownedLot} />
 
-        {/* Available Lots Table */}
+        {/* Available Lots Table (only available) */}
         <Card className="mt-8">
           <CardHeader>
             <CardTitle className="text-forest-green">Available Memorial Lots</CardTitle>
@@ -103,16 +119,20 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="sold">Sold</SelectItem>
-                  <SelectItem value="reserved">Reserved</SelectItem>
-                  <SelectItem value="development">Development</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={areaFilter} onValueChange={(v) => { setAreaFilter(v); setPage(1); }}>
-                <SelectTrigger><SelectValue placeholder="Area" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Area Type" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Areas</SelectItem>
-                  {availableAreas.map(area => (<SelectItem key={area} value={area}>{area}</SelectItem>))}
+                  <SelectItem value="all">All Area Types</SelectItem>
+                  <SelectItem value="Regular">Regular</SelectItem>
+                  <SelectItem value="Premium">Premium</SelectItem>
+                  <SelectItem value="Prime">Prime</SelectItem>
+                  <SelectItem value="Level A">Level A</SelectItem>
+                  <SelectItem value="Level B">Level B</SelectItem>
+                  <SelectItem value="Level C">Level C</SelectItem>
+                  <SelectItem value="Level D">Level D</SelectItem>
+                  <SelectItem value="Level E">Level E</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={priceFilter} onValueChange={(v) => { setPriceFilter(v); setPage(1); }}>
@@ -132,7 +152,7 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
 
             {/* Results + Pagination */}
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">Showing {pagedLots.length} of {filteredLots.length} filtered lots (page {currentPage} of {totalPages})</p>
+              <p className="text-sm text-muted-foreground">Showing {pagedLots.length} of {filteredLots.length} available lots (page {currentPage} of {totalPages})</p>
               <div className="space-x-2">
                 <Button variant="outline" size="sm" disabled={currentPage <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
                 <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>Next</Button>
@@ -144,8 +164,8 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot Number</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area Type</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phase & Block</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
@@ -155,20 +175,82 @@ const PublicDashboard = ({ username, onLogout }: PublicDashboardProps) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {pagedLots.map((lot) => (
+                  {pagedLots
+                    .filter((lot) => {
+                      const s = lot.status.toLowerCase();
+                      return s === 'unsold' || s.includes('partially');
+                    })
+                    .map((lot) => (
                     <tr key={lot.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm font-medium text-gray-900">{lot.lotNo}</div></td>
-                      <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm text-gray-900">{lot.area}</div></td>
+                      <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm font-medium text-gray-900">{lot.plotName}</div></td>
+                      <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm text-gray-900">{lot.areaType}</div></td>
                       <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm text-gray-900">{lot.phase} - Block {lot.block}</div></td>
                       <td className="px-4 py-4 whitespace-nowrap"><span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getStatusBadgeColor(lot.status)}`}>{lot.status}</span></td>
                       <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm font-medium text-gray-900">₱{lot.price.toLocaleString()}</div></td>
                       <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm text-gray-900">{lot.size}</div></td>
-                      <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm text-gray-500">{lot.location}</div></td>
-                      <td className="px-4 py-4 whitespace-nowrap"><Button variant="outline" size="sm" className="flex items-center" onClick={() => { if ((window as any).focusPlotArea) { (window as any).focusPlotArea(lot.area.toLowerCase()); } }}><Eye className="w-4 h-4 mr-1" />View on Map</Button></td>
+                      <td className="px-4 py-4 whitespace-nowrap"><div className="text-sm text-gray-500">{lot.area}</div></td>
+                      <td className="px-4 py-4 whitespace-nowrap"><Button variant="outline" size="sm" className="flex items-center" onClick={() => { if ((window as any).focusPlotArea) { (window as any).focusPlotArea(String(lot.plotName).toLowerCase()); } }}><Eye className="w-4 h-4 mr-1" />View on Map</Button></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Owned Lots Section */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="text-forest-green">Owned Lots</CardTitle>
+            <CardDescription>Lots registered under your name</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+                <div className="p-4 border-b">
+                  <div className="text-base font-semibold text-gray-900">{ownedLot.areaName}</div>
+                  <div className="text-sm text-gray-600">Lot: {ownedLot.lotNo}</div>
+                </div>
+                <div className="p-4 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="text-gray-500">Owner</div>
+                    <div className="font-medium text-gray-900">{ownedLot.ownerName}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Status</div>
+                    <div className="font-medium text-gray-900">{ownedLot.status}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Contract Price</div>
+                    <div className="font-medium text-gray-900">₱{ownedLot.contractPrice.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Plan</div>
+                    <div className="font-medium text-gray-900">{ownedLot.paymentPlan}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Monthly</div>
+                    <div className="font-medium text-gray-900">{ownedLot.monthly}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Remaining</div>
+                    <div className="font-medium text-gray-900">₱{ownedLot.remainingBalance.toLocaleString()}</div>
+                  </div>
+                  <div className="col-span-2">
+                    <div className="text-gray-500">Last Payment</div>
+                    <div className="font-medium text-gray-900">{ownedLot.lastPaymentDate}</div>
+                  </div>
+                </div>
+                <div className="p-4 border-t flex justify-end">
+                  <Button variant="outline" onClick={() => {
+                    const el = document.getElementById('public-map');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => { (window as any).focusOwnedLot && (window as any).focusOwnedLot(); }, 400);
+                  }}>
+                    View Lot on Map
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
