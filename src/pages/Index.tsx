@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Phone, Mail, Clock, Leaf, Heart, Star } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Leaf, Heart, Star, Home, Flame, Wrench } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -23,10 +23,34 @@ const Index = () => {
   ];
 
   const plotGardens = [
-    { name: "Garden Lawn Lots", status: "Available", color: "bg-status-available" },
-    { name: "Family Estate Chaplet", status: "Limited", color: "bg-memorial-gold" },
-    { name: "Crematorium Niches", status: "Available", color: "bg-trust-blue" },
-    { name: "Development Areas", status: "Coming Soon", color: "bg-status-development" }
+    {
+      name: "Garden Lawn Lots",
+      status: "Available",
+      icon: Leaf,
+      description:
+        "Expansive lawn lots with refined landscaping designed for traditional ground burials.",
+    },
+    {
+      name: "Family Estate Chaplet",
+      status: "Limited",
+      icon: Home,
+      description:
+        "Private family estates with space for multiple interments and bespoke memorial features.",
+    },
+    {
+      name: "Crematorium Niches",
+      status: "Available",
+      icon: Flame,
+      description:
+        "Elegant columbarium niches for urn placement within tranquil, thoughtfully curated settings.",
+    },
+    {
+      name: "Development Areas",
+      status: "Coming Soon",
+      icon: Wrench,
+      description:
+        "Future park enhancements currently under planning and landscape development.",
+    },
   ];
 
   return (
@@ -117,17 +141,23 @@ const Index = () => {
             {plotGardens.map((garden, index) => (
               <Card key={index} className="hover:shadow-memorial transition-all duration-300">
                 <CardContent className="pt-6">
-                  <div className={`w-12 h-12 ${garden.color} rounded-lg mb-4`}></div>
+                  <div
+                    className={`w-12 h-12 ${
+                      garden.status === 'Available' ? 'bg-forest-green' : 'bg-memorial-gold'
+                    } rounded-lg mb-4 flex items-center justify-center`}
+                  >
+                    <garden.icon className="w-6 h-6 text-white" />
+                  </div>
                   <h3 className="font-bold text-forest-green mb-2">{garden.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Premium memorial lots with beautiful garden landscaping and peaceful ambiance.
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">{garden.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                      garden.status === 'Available' ? 'bg-status-available/20 text-status-available' :
-                      garden.status === 'Limited' ? 'bg-memorial-gold/20 text-memorial-gold' :
-                      'bg-status-development/20 text-status-development'
-                    }`}>
+                    <span
+                      className={`text-sm font-medium px-3 py-1 rounded-full ${
+                        garden.status === 'Available'
+                          ? 'bg-forest-green/10 text-forest-green'
+                          : 'bg-memorial-gold/10 text-memorial-gold'
+                      }`}
+                    >
                       {garden.status}
                     </span>
                   </div>
@@ -161,8 +191,10 @@ const Index = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p>Rodriguez (formerly Montalban), Rizal</p>
-                  <Button variant="outline" className="w-full">
-                    View on Google Maps
+                  <Button variant="outline" className="w-full" asChild>
+                    <a href="https://www.google.com/maps/place/Forest+Lawn+Memorial+Park/@14.7452354,121.1236931,661m/data=!3m1!1e3!4m6!3m5!1s0x3397bb26323ef7dd:0xd77e4099c628aa3a!8m2!3d14.743462!4d121.128361!16s%2Fg%2F11bw67qv__?entry=ttu&g_ep=EgoyMDI1MDExNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">
+                      View on Google Maps
+                    </a>
                   </Button>
                 </CardContent>
               </Card>

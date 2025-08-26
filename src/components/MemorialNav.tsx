@@ -1,4 +1,4 @@
-import { MapPin, BarChart3, Users, Home, LogOut } from "lucide-react";
+import { MapPin, BarChart3, Home, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../public/lovable-uploads/logoFLMP.png";
@@ -16,7 +16,6 @@ const MemorialNav = ({ userType = 'admin', username, onLogout }: MemorialNavProp
     { icon: Home, label: "Home", path: "/", active: location.pathname === "/" },
     { icon: BarChart3, label: "Dashboard", path: "/dashboard", active: location.pathname === "/dashboard" },
     { icon: MapPin, label: "Contact", path: "/contact", active: location.pathname === "/contact" },
-    ...(userType === 'admin' ? [{ icon: Users, label: "Lot Owners", path: "/dashboard", active: false }] : []),
   ];
 
   return (
