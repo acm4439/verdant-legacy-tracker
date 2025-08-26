@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
     // Custom plugin to handle GeoJSON files
     {
       name: 'geojson-loader',
-      transform(code, id) {
+      transform(code: string, id: string) {
         if (id.endsWith('.geojson')) {
           return {
             code: `export default ${code}`,

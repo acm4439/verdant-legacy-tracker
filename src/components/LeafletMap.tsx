@@ -40,9 +40,11 @@ interface DetailedLot {
   collector: string;
 }
 
-interface LeafletMapProps {
-  lots: DetailedLot[];
-  onLotClick: (lot: DetailedLot) => void;
+interface SimpleLeafletMapProps {
+  lots: any[]; // Allow simple lot data structure  
+  onLotClick: (lot: any) => void;
+//   lots: DetailedLot[];
+//   onLotClick: (lot: DetailedLot) => void;
   publicMode?: boolean;
   ownedLot?: {
     areaName: string;
@@ -97,7 +99,7 @@ const getStatusBadgeColor = (status: string) => {
   }
 };
 
-const LeafletMap = ({ lots, onLotClick, publicMode = false, ownedLot }: LeafletMapProps) => {
+const LeafletMap = ({ lots, onLotClick, publicMode = false, ownedLot }: SimpleLeafletMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const [selectedPlotArea, setSelectedPlotArea] = useState<string>('');
