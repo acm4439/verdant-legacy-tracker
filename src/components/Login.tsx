@@ -69,15 +69,11 @@ const Login = ({ onLogin }: LoginProps) => {
       <div className="w-full max-w-md">
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4">
-            <img
-              src="/lovable-uploads/logoFLMP.png"
-              alt="Forest Lawn Memorial Park Logo"
-              className="w-20 h-20 object-contain rounded-2xl shadow-lg"
-            />
+          <div className="w-20 h-20 bg-gradient-forest rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <MapPin className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Forest Lawn</h1>
-          <p className="text-lg text-gray-600">Memorial Park Management</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Memorial Park</h1>
+          <p className="text-lg text-gray-600">Management System</p>
         </div>
 
         {/* Login Card */}
@@ -202,7 +198,7 @@ const Login = ({ onLogin }: LoginProps) => {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-sm text-gray-500">
-            © 2024 Forest Lawn Memorial Park. All rights reserved.
+            © 2024 Memorial Park Management. All rights reserved.
           </p>
         </div>
       </div>

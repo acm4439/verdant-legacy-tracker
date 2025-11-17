@@ -30,7 +30,8 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
     reservedLots: 20,
     totalRevenue: 245600000,
     monthlyRevenue: 12800000,
-    occupancyRate: 66.5
+    occupancyRate: 66.5,
+    salesThisMonth: 12
   };
 
   const recentTransactions = [
@@ -84,7 +85,7 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
         <div>
           <h1 className="text-3xl font-bold text-forest-green">Memorial Park Dashboard</h1>
           <p className="text-muted-foreground mt-2">
-            "Ang binago at Higit na Pinagandang Memorial Park!"
+            Admin Overview & Management Console
           </p>
         </div>
         <div className="flex space-x-3">
@@ -100,7 +101,8 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Total Lots */}
         <Card className="border-l-4 border-l-forest-green">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Lots</CardTitle>
@@ -109,11 +111,12 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
             <div className="text-3xl font-bold text-forest-green">{dashboardStats.totalLots}</div>
             <div className="flex items-center mt-2 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4 mr-1" />
-              Across all phases
+              Baseline inventory
             </div>
           </CardContent>
         </Card>
 
+        {/* Occupancy Rate */}
         <Card className="border-l-4 border-l-memorial-gold">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Occupancy Rate</CardTitle>
@@ -121,9 +124,25 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
           <CardContent>
             <div className="text-3xl font-bold text-memorial-gold">{dashboardStats.occupancyRate}%</div>
             <Progress value={dashboardStats.occupancyRate} className="mt-3" />
+            <p className="text-xs text-muted-foreground mt-2">Quick view of park capacity</p>
           </CardContent>
         </Card>
 
+        {/* Sales This Month */}
+        <Card className="border-l-4 border-l-trust-blue">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Sales This Month</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-trust-blue">{dashboardStats.salesThisMonth}</div>
+            <div className="flex items-center mt-2 text-sm text-muted-foreground">
+              <CheckCircle className="w-4 h-4 mr-1" />
+              Lots sold in current month
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Monthly Revenue */}
         <Card className="border-l-4 border-l-status-available">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Monthly Revenue</CardTitle>
@@ -139,17 +158,45 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-trust-blue">
+        {/* Total Revenue */}
+        <Card className="border-l-4 border-l-forest-green">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue (YTD)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-trust-blue">
+            <div className="text-3xl font-bold text-forest-green">
               ₱{(dashboardStats.totalRevenue / 1000000).toFixed(0)}M
             </div>
             <div className="flex items-center mt-2 text-sm text-muted-foreground">
               <DollarSign className="w-4 h-4 mr-1" />
-              Lifetime revenue
+              Overall business health
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Lot Status Breakdown */}
+        <Card className="border-l-4 border-l-memorial-gold">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Lot Status Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Available</span>
+                <Badge variant="outline" className="bg-status-available/10 text-status-available">{dashboardStats.availableLots}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Sold</span>
+                <Badge variant="outline" className="bg-status-sold/10 text-status-sold">{dashboardStats.soldLots}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Reserved</span>
+                <Badge variant="outline" className="bg-status-reserved/10 text-status-reserved">{dashboardStats.reservedLots}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Under Development</span>
+                <Badge variant="outline" className="bg-status-development/10 text-status-development">{dashboardStats.developmentLots}</Badge>
+              </div>
             </div>
           </CardContent>
         </Card>

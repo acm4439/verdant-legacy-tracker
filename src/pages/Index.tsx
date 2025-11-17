@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Clock, Leaf, Heart, Star, Home, Flame, Wrench } from "lucide-react";
 import { Link } from "react-router-dom";
+import heroImage from "@/assets/hero-memorial-park.jpg";
 
 const Index = () => {
   const features = [
@@ -59,22 +60,21 @@ const Index = () => {
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(/lovable-uploads/08438568-4a09-4980-b838-c4187b12e1f8.png)` }}
+          style={{ backgroundImage: `url(${heroImage})` }}
         >
           <div className="absolute inset-0 bg-forest-green-dark/60"></div>
         </div>
         
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Forest Lawn
             <span className="block text-memorial-gold">Memorial Park</span>
           </h1>
           <p className="text-xl md:text-2xl mb-4 font-light">
-            "Ang binago at Higit na Pinagandang Memorial Park!"
+            "Where memories rest in eternal peace"
           </p>
           <p className="text-lg mb-8 text-white/90 max-w-2xl mx-auto">
-            Located in Rodriguez (formerly Montalban), Rizal. A serene resting place designed with 
-            unparalleled beauty and lasting dignity for your loved ones.
+            A serene resting place designed with unparalleled beauty and lasting dignity for your loved ones. 
+            Experience tranquility in a park that honors life and celebrates cherished memories.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="memorial" className="text-lg px-8" asChild>
@@ -172,14 +172,14 @@ const Index = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-forest-green mb-4">
-                Visit Our Memorial Park
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Located in the scenic hills of Rodriguez, Rizal
-              </p>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-forest-green mb-4">
+              Visit Our Memorial Park
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              A peaceful sanctuary for your loved ones
+            </p>
+          </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Card>
@@ -189,14 +189,14 @@ const Index = () => {
                     <span>Location</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p>Rodriguez (formerly Montalban), Rizal</p>
-                  <Button variant="outline" className="w-full" asChild>
-                    <a href="https://www.google.com/maps/place/Forest+Lawn+Memorial+Park/@14.7452354,121.1236931,661m/data=!3m1!1e3!4m6!3m5!1s0x3397bb26323ef7dd:0xd77e4099c628aa3a!8m2!3d14.743462!4d121.128361!16s%2Fg%2F11bw67qv__?entry=ttu&g_ep=EgoyMDI1MDExNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">
-                      View on Google Maps
-                    </a>
-                  </Button>
-                </CardContent>
+              <CardContent className="space-y-4">
+                <p>Contact us for location details and directions</p>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/contact">
+                    Get Directions
+                  </Link>
+                </Button>
+              </CardContent>
               </Card>
 
               <Card>
