@@ -64,7 +64,7 @@ const Contact = () => {
                 <div>
                   <p className="font-medium">Address</p>
                   <p className="text-sm text-muted-foreground">
-                    Forest Lawn Memorial Park, Mayon Avenue, Rodriguez, Rizal 1860
+                    Contact us for location details and directions
                   </p>
                 </div>
               </div>
@@ -72,14 +72,14 @@ const Contact = () => {
                 <Phone className="w-5 h-5 text-forest-green mt-1" />
                 <div>
                   <p className="font-medium">Mobile</p>
-                  <p className="text-sm text-muted-foreground">0917 595 2551</p>
+                  <p className="text-sm text-muted-foreground">Contact for inquiries</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-forest-green mt-1" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">forestlawnmemorialpark@yahoo.com</p>
+                  <p className="text-sm text-muted-foreground">info@memorialpark.com</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
