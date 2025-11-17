@@ -36,17 +36,19 @@ const Contact = () => {
         {/* Intro / About */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-forest-green">About Forest Lawn Memorial Park</CardTitle>
+            <CardTitle className="text-forest-green">About Our Memorial Park</CardTitle>
             <CardDescription>
-              A natural creation designed and nurtured with care in Rodriguez (formerly Montalban), Rizal.
+              A peaceful memorial park thoughtfully designed to honor loved ones with dignity, serenity, and care.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 leading-relaxed">
             <p>
-              A natural creation designed and nurtured by the creativity and ingenuity of man in the aspiration of giving full credence to the concept of caring for your dearly departed loved ones.
+              Our grounds are planned to provide families with a tranquil space for remembrance — combining natural landscapes,
+              well-maintained gardens, and thoughtfully laid-out sections for every type of memorial need.
             </p>
             <p>
-              Forest Lawn Memorial Park boasts of dramatic terrain and a well-designed concept, which can compete with the most beautiful parks in the country. Its unique top-soil mixture paired with the park’s natural drainage significantly reduces floods and soil erosion.
+              Each memorial park can customize this information with their own history, location details, and unique features to
+              help visitors understand what makes their park special.
             </p>
           </CardContent>
         </Card>
@@ -64,7 +66,7 @@ const Contact = () => {
                 <div>
                   <p className="font-medium">Address</p>
                   <p className="text-sm text-muted-foreground">
-                    Contact us for location details and directions
+                    Please contact us for the exact address and directions for your memorial park location.
                   </p>
                 </div>
               </div>
@@ -72,31 +74,37 @@ const Contact = () => {
                 <Phone className="w-5 h-5 text-forest-green mt-1" />
                 <div>
                   <p className="font-medium">Mobile</p>
-                  <p className="text-sm text-muted-foreground">Contact for inquiries</p>
+                  <p className="text-sm text-muted-foreground">
+                    Add your park&apos;s primary contact number here for inquiries and assistance.
+                  </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-forest-green mt-1" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">info@memorialpark.com</p>
+                  <p className="text-sm text-muted-foreground">
+                    info@memorialpark.com (update this to your park&apos;s official email address)
+                  </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <Clock className="w-5 h-5 text-forest-green mt-1" />
                 <div>
                   <p className="font-medium">Office Hours</p>
-                  <p className="text-sm text-muted-foreground">Mon–Sat: 8:00 AM – 5:00 PM</p>
+                  <p className="text-sm text-muted-foreground">
+                    Typical hours: Mon–Sat, 8:00 AM – 5:00 PM (adjust based on your memorial park schedule).
+                  </p>
                 </div>
               </div>
               <div>
                 <a 
-                  href="https://maps.google.com/?q=Forest+Lawn+Memorial+Park+Rodriguez+Rizal" 
+                  href="https://maps.google.com" 
                   target="_blank" 
                   rel="noreferrer" 
                   className="text-sm text-forest-green underline hover:opacity-80"
                 >
-                  Open in Google Maps
+                  View location in Google Maps
                 </a>
               </div>
             </CardContent>

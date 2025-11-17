@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Leaf, Lock, User, Eye, EyeOff } from "lucide-react";
 
 interface LoginProps {
   onLogin: (userType: 'admin' | 'public', username: string) => void;
@@ -70,7 +70,7 @@ const Login = ({ onLogin }: LoginProps) => {
         {/* Logo and Title */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-forest rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <MapPin className="w-10 h-10 text-white" />
+            <Leaf className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Memorial Park</h1>
           <p className="text-lg text-gray-600">Management System</p>

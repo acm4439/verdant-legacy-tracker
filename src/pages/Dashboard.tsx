@@ -13,7 +13,7 @@ import {
   Clock,
   FileText
  } from "lucide-react";
-import InteractivePlotMap from "@/components/InteractivePlotMap";
+import InteractivePlotMap, { sampleLots } from "@/components/InteractivePlotMap";
 
 interface DashboardProps {
   username: string;
@@ -21,13 +21,22 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ username, onLogout }: DashboardProps) => {
-  // Sample data
+  // Lot statistics from the same data used in the map cards
+  const lotStats = {
+    total: sampleLots.length,
+    sold: sampleLots.filter(lot => lot.status === 'sold').length,
+    available: sampleLots.filter(lot => lot.status === 'available').length,
+    development: sampleLots.filter(lot => lot.status === 'development').length,
+    reserved: sampleLots.filter(lot => lot.status === 'reserved').length,
+  };
+
+  // Dashboard aggregates
   const dashboardStats = {
-    totalLots: 487,
-    soldLots: 324,
-    availableLots: 98,
-    developmentLots: 45,
-    reservedLots: 20,
+    totalLots: lotStats.total,
+    soldLots: lotStats.sold,
+    availableLots: lotStats.available,
+    developmentLots: lotStats.development,
+    reservedLots: lotStats.reserved,
     totalRevenue: 245600000,
     monthlyRevenue: 12800000,
     occupancyRate: 66.5,
@@ -174,7 +183,7 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
           </CardContent>
         </Card>
 
-        {/* Lot Status Breakdown */}
+        {/* Lot Status Breakdown (uses same data as the map statistics cards) */}
         <Card className="border-l-4 border-l-memorial-gold">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Lot Status Breakdown</CardTitle>
@@ -183,19 +192,19 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm">Available</span>
-                <Badge variant="outline" className="bg-status-available/10 text-status-available">{dashboardStats.availableLots}</Badge>
+                <Badge variant="outline" className="bg-status-available/10 text-status-available">{lotStats.available}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Sold</span>
-                <Badge variant="outline" className="bg-status-sold/10 text-status-sold">{dashboardStats.soldLots}</Badge>
+                <Badge variant="outline" className="bg-status-sold/10 text-status-sold">{lotStats.sold}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Reserved</span>
-                <Badge variant="outline" className="bg-status-reserved/10 text-status-reserved">{dashboardStats.reservedLots}</Badge>
+                <Badge variant="outline" className="bg-status-reserved/10 text-status-reserved">{lotStats.reserved}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm">Under Development</span>
-                <Badge variant="outline" className="bg-status-development/10 text-status-development">{dashboardStats.developmentLots}</Badge>
+                <Badge variant="outline" className="bg-status-development/10 text-status-development">{lotStats.development}</Badge>
               </div>
             </div>
           </CardContent>
@@ -203,7 +212,7 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
       </div>
 
       {/* Interactive Map Section */}
-      <InteractivePlotMap />
+      <InteractivePlotMap hideStats />
 
       {/* Recent Activity & Upcoming Payments */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

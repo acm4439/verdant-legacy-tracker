@@ -8,7 +8,7 @@ interface MemorialNavProps {
   onLogout?: () => void;
 }
 
-const MemorialNav = ({ userType = 'admin', username, onLogout }: MemorialNavProps) => {
+const MemorialNav = ({ username, onLogout }: MemorialNavProps) => {
   const location = useLocation();
   
   const navItems = [
@@ -60,13 +60,6 @@ const MemorialNav = ({ userType = 'admin', username, onLogout }: MemorialNavProp
               <div className="hidden md:flex items-center space-x-2">
                 <span className="text-sm text-gray-500">Welcome,</span>
                 <span className="text-sm font-medium text-gray-900">{username}</span>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  userType === 'admin' 
-                    ? 'bg-blue-100 text-blue-800' 
-                    : 'bg-green-100 text-green-800'
-                }`}>
-                  {userType === 'admin' ? 'Admin' : 'Public'}
-                </span>
               </div>
             )}
             {onLogout && (

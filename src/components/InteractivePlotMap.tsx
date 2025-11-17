@@ -21,7 +21,7 @@ interface InteractivePlotMapProps {
 }
 
 // Sample lot data with GeoJSON polygons for map plotting
-const sampleLots = [
+export const sampleLots = [
   {
     id: "L001",
     phase: "1",
